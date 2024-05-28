@@ -31,24 +31,25 @@
     
     <script>
         // Replace 'YOUR_WEBSOCKET_ENDPOINT' with the actual WebSocket endpoint provided by AWS
-        const websocket = new WebSocket('wss://yuohuck107.execute-api.ap-south-1.amazonaws.com/production/');
+        const socket = new WebSocket('wss://r497pmgvy4.execute-api.ap-south-1.amazonaws.com/production/');
 
-        websocket.onopen = function(event) {
+        socket.onopen = function(event) {
             console.log('WebSocket connection established.');
         };
-
-        websocket.onmessage = function(event) {
+        
+        socket.onmessage = function(event) {
             console.log('Received message:', event.data);
             // Process the received message (e.g., update the graph)
         };
-
-        websocket.onerror = function(error) {
+        
+        socket.onerror = function(error) {
             console.error('WebSocket error:', error);
         };
-
-        websocket.onclose = function(event) {
+        
+        socket.onclose = function(event) {
             console.log('WebSocket connection closed.');
         };
+
 
         // Function to update the graph with voting progress data
         async function updateGraph() {
