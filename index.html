@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Voting Site</title>
     <link rel="stylesheet" type="text/css" href="styles.css">
+    <!-- Add Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <h1>Vote for Your Favorite Option</h1>
@@ -22,12 +24,44 @@
             <input type="radio" id="option2" name="choice" value="Option2">
             <label for="option2">Option 20</label>
         </div>
-<br>
+        <br>
         <button type="submit">Submit Vote</button>
     </form>
     <p id="result"></p>
+    <!-- Add canvas for the graph -->
+    <canvas id="voteGraph"></canvas>
     
     <script>
+        // Chart.js configuration
+        var ctx = document.getElementById('voteGraph').getContext('2d');
+        var voteGraph = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Option 10', 'Option 20'],
+                datasets: [{
+                    label: 'Votes',
+                    data: [0, 0], // Initial vote counts
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Submit vote form
         document.getElementById('voteForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const name = document.getElementById('name').value;
@@ -47,6 +81,14 @@
                 const result = await response.json();
                 if (response.ok) {
                     document.getElementById('result').innerText = result.body;
+                    
+                    // Update vote counts for the selected option in the graph
+                    if (choice === 'Option1') {
+                        voteGraph.data.datasets[0].data[0]++;
+                    } else if (choice === 'Option2') {
+                        voteGraph.data.datasets[0].data[1]++;
+                    }
+                    voteGraph.update(); // Update the graph
                 } else {
                     document.getElementById('result').innerText = result.body; // Display the error message
                 }
