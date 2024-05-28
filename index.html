@@ -30,8 +30,8 @@
     <canvas id="voteGraph"></canvas>
     
     <script>
-        // Function to establish WebSocket connection
-        const websocket = new WebSocket('wss://r497pmgvy4.execute-api.ap-south-1.amazonaws.com/production/');
+        // WebSocket connection
+        const websocket = new WebSocket('wss://yuohuck107.execute-api.ap-south-1.amazonaws.com/production/');
 
         websocket.onopen = function(event) {
             console.log('WebSocket connection established.');
@@ -40,10 +40,9 @@
         websocket.onmessage = function(event) {
             console.log('Received message:', event.data);
             const data = JSON.parse(event.data);
-            const option1Count = data.option1Count;
-            const option2Count = data.option2Count;
-            voteGraph.data.datasets[0].data = [option1Count, option2Count];
-            voteGraph.update();
+            if (data.option1Count !== undefined && data.option2Count !== undefined) {
+                updateGraph(data.option1Count, data.option2Count);
+            }
         };
 
         websocket.onerror = function(error) {
@@ -83,6 +82,35 @@
             }
         });
 
+        function updateGraph(option1Count, option2Count) {
+            voteGraph.data.datasets[0].data = [option1Count, option2Count];
+            voteGraph.update();
+        }
+
+        // Function to fetch voting progress data from the backend
+        async function fetchVotingProgress() {
+            try {
+                const response = await fetch('https://r497pmgvy4.execute-api.ap-south-1.amazonaws.com/prod/voting-progress', {
+                    method: 'GET',
+                    headers: {
+                        'x-api-key': '5pB1csnFB980aBCZH0ZgA7bAbOlzxOXF7My3S1Ys'
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    updateGraph(data.option1Count, data.option2Count);
+                } else {
+                    console.error('Error fetching voting progress:', response.statusText);
+                }
+            } catch (error) {
+                console.error('An error occurred while fetching voting progress:', error);
+            }
+        }
+
+        // Update the graph initially and then every 5 seconds
+        fetchVotingProgress();
+        setInterval(fetchVotingProgress, 5000);
+
         // Submit vote form
         document.getElementById('voteForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -98,10 +126,9 @@
 
             try {
                 const response = await fetch('https://r497pmgvy4.execute-api.ap-south-1.amazonaws.com/prod/vote', {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'x-api-key': '5pB1csnFB980aBCZH0ZgA7bAbOlzxOXF7My3S1Ys' // Use your actual API key here
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
                     },
                     body: JSON.stringify(payload)
                 });
