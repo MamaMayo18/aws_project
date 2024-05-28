@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Voting Site</title>
     <link rel="stylesheet" type="text/css" href="styles.css">
-    <!-- Add Chart.js library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -28,10 +27,32 @@
         <button type="submit">Submit Vote</button>
     </form>
     <p id="result"></p>
-    <!-- Add canvas for the graph -->
     <canvas id="voteGraph"></canvas>
     
     <script>
+        // Function to fetch voting progress data from the backend
+        async function fetchVotingProgress() {
+            try {
+                const response = await fetch('https://your-backend-api-url');
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error fetching voting progress:', error);
+                return null;
+            }
+        }
+
+        // Function to update the graph with voting progress data
+        async function updateGraph() {
+            const data = await fetchVotingProgress();
+            if (data) {
+                const option1Count = data.option1Count;
+                const option2Count = data.option2Count;
+                voteGraph.data.datasets[0].data = [option1Count, option2Count];
+                voteGraph.update();
+            }
+        }
+
         // Chart.js configuration
         var ctx = document.getElementById('voteGraph').getContext('2d');
         var voteGraph = new Chart(ctx, {
@@ -40,7 +61,7 @@
                 labels: ['Option 10', 'Option 20'],
                 datasets: [{
                     label: 'Votes',
-                    data: [0, 0], // Initial vote counts
+                    data: [0, 0],
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
                         'rgba(54, 162, 235, 0.2)'
@@ -60,6 +81,10 @@
                 }
             }
         });
+
+        // Update the graph initially and then every 5 seconds
+        updateGraph();
+        setInterval(updateGraph, 5000);
 
         // Submit vote form
         document.getElementById('voteForm').addEventListener('submit', async function(e) {
@@ -81,14 +106,8 @@
                 const result = await response.json();
                 if (response.ok) {
                     document.getElementById('result').innerText = result.body;
-                    
-                    // Update vote counts for the selected option in the graph
-                    if (choice === 'Option1') {
-                        voteGraph.data.datasets[0].data[0]++;
-                    } else if (choice === 'Option2') {
-                        voteGraph.data.datasets[0].data[1]++;
-                    }
-                    voteGraph.update(); // Update the graph
+                    // Update the graph after submitting the vote
+                    updateGraph();
                 } else {
                     document.getElementById('result').innerText = result.body; // Display the error message
                 }
