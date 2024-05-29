@@ -93,10 +93,7 @@
         // Fetch initial vote counts and update the graph
         async function fetchInitialVoteCounts() {
             try {
-                const response = await fetch('https://r497pmgvy4.execute-api.ap-south-1.amazonaws.com/production/WebSocket', {
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/json' }
-                });
+                const response = await fetch('https://r497pmgvy4.execute-api.ap-south-1.amazonaws.com/production/WebSocket');
                 const result = await response.json();
                 if (response.ok) {
                     console.log('Initial vote counts:', result);
