@@ -25,12 +25,22 @@
 <br>
         <button type="submit">Submit Vote</button>
     </form>
-    <p id="result"></p>
-    
-    <script>
+   <p id="result"></p>
+    <div id="graph" class="bar-container">
+        <div id="barOption1" class="bar">
+            <p>Option 1</p>
+            <p id="countOption1">0</p>
+        </div>
+        <div id="barOption2" class="bar">
+            <p>Option 2</p>
+            <p id="countOption2">0</p>
+        </div>
+    </div>
 
+    <script>
+        // Establish a WebSocket connection
         const websocket = new WebSocket('wss://yuohuck107.execute-api.ap-south-1.amazonaws.com/production/');
-        
+
         websocket.onopen = function(event) {
             console.log('WebSocket connection established.');
         };
@@ -53,11 +63,10 @@
 
         // Function to update the graph with new data
         function updateGraph(option1Count, option2Count) {
-            const graphDiv = document.getElementById('graph');
-            graphDiv.innerHTML = `
-                <p>Option 1: ${option1Count}</p>
-                <p>Option 2: ${option2Count}</p>
-            `;
+            document.getElementById('countOption1').innerText = option1Count;
+            document.getElementById('countOption2').innerText = option2Count;
+            document.getElementById('barOption1').style.height = `${option1Count * 20}px`;
+            document.getElementById('barOption2').style.height = `${option2Count * 20}px`;
         }
         
         document.getElementById('voteForm').addEventListener('submit', async function(e) {
