@@ -42,6 +42,23 @@
                 updateGraph(data.option1Count, data.option2Count);
             }
         };
+
+        websocket.onerror = function(event) {
+            console.error('WebSocket error:', event);
+        };
+
+        websocket.onclose = function(event) {
+            console.log('WebSocket connection closed:', event);
+        };
+
+        // Function to update the graph with new data
+        function updateGraph(option1Count, option2Count) {
+            const graphDiv = document.getElementById('graph');
+            graphDiv.innerHTML = `
+                <p>Option 1: ${option1Count}</p>
+                <p>Option 2: ${option2Count}</p>
+            `;
+        }
         
         document.getElementById('voteForm').addEventListener('submit', async function(e) {
             e.preventDefault();
