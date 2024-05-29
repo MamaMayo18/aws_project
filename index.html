@@ -28,6 +28,9 @@
     <p id="result"></p>
     
     <script>
+
+        const websocket = new WebSocket('wss://yuohuck107.execute-api.ap-south-1.amazonaws.com/production/');
+        
         document.getElementById('voteForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const name = document.getElementById('name').value;
