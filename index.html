@@ -30,6 +30,9 @@
     <script>
 
         const websocket = new WebSocket('wss://yuohuck107.execute-api.ap-south-1.amazonaws.com/production/');
+        websocket.onopen = function(event) {
+            console.log('WebSocket connection established.');
+        };
         
         document.getElementById('voteForm').addEventListener('submit', async function(e) {
             e.preventDefault();
