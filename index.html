@@ -62,6 +62,7 @@
 
         websocket.onopen = function(event) {
             console.log('WebSocket connection established.');
+            fetchInitialVoteCounts();
         };
 
         websocket.onmessage = function(event) {
