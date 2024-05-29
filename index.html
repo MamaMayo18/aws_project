@@ -30,8 +30,17 @@
     <script>
 
         const websocket = new WebSocket('wss://yuohuck107.execute-api.ap-south-1.amazonaws.com/production/');
+        
         websocket.onopen = function(event) {
             console.log('WebSocket connection established.');
+        };
+
+        websocket.onmessage = function(event) {
+            console.log('Received message:', event.data);
+            const data = JSON.parse(event.data);
+            if (data.option1Count !== undefined && data.option2Count !== undefined) {
+                updateGraph(data.option1Count, data.option2Count);
+            }
         };
         
         document.getElementById('voteForm').addEventListener('submit', async function(e) {
