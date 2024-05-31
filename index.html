@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Voting Site</title>
     <link rel="stylesheet" type="text/css" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <h1>Vote for Your Favorite Option</h1>
@@ -28,6 +29,8 @@
         </form>
         <p id="result"></p>
     </div>
+
+    <canvas id="votesChart" width="400" height="200"></canvas>
 
     <script>
         document.getElementById('voteForm').addEventListener('submit', async function(e) {
@@ -56,6 +59,42 @@
                 document.getElementById('result').innerText = 'An error occurred while submitting your vote.';
             }
         });
+
+        const ctx = document.getElementById('votesChart').getContext('2d');
+        const votesChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Option 1', 'Option 2'],
+                datasets: [{
+                    label: '# of Votes',
+                    data: [0, 0],
+                    backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)'],
+                    borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        async function updateChart() {
+            try {
+                const response = await fetch('wss://f7jons2p19.execute-api.ap-south-1.amazonaws.com/production/WebSocket');
+                const data = await response.json();
+                votesChart.data.datasets[0].data = [data.Option1, data.Option2];
+                votesChart.update();
+            } catch (error) {
+                console.error('Error fetching vote counts:', error);
+            }
+        }
+
+        // Call updateChart every 5 seconds
+        setInterval(updateChart, 5000);
     </script>
 </body>
 </html>
