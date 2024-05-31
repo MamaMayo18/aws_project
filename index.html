@@ -88,31 +88,39 @@
         });
 
         async function updateChart() {
-            let socket = new WebSocket('wss://f7jons2p19.execute-api.ap-south-1.amazonaws.com/production');
-
+            // Create a WebSocket connection
+            const socket = new WebSocket('wss://f7jons2p19.execute-api.ap-south-1.amazonaws.com/production');
+            
+            // Event handler for WebSocket connection opened
             socket.onopen = function(event) {
                 console.log('WebSocket connected.');
             };
             
+            // Event handler for WebSocket messages
             socket.onmessage = function(event) {
                 try {
+                    // Parse the received message as JSON   
                     const data = JSON.parse(event.data);
+            
+                    // Update the chart data with received vote counts
                     votesChart.data.datasets[0].data = [data.Option1, data.Option2];
+            
+                    // Update the chart
                     votesChart.update();
                 } catch (error) {
-                    console.error('Error parsing message:', error);
+                    console.error('Error parsing WebSocket message:', error);
                 }
             };
             
+            // Event handler for WebSocket connection errors
             socket.onerror = function(error) {
                 console.error('WebSocket error:', error);
             };
             
+            // Event handler for WebSocket connection closed
             socket.onclose = function(event) {
                 console.log('WebSocket closed.');
             };
-
-        }
 
         // Call updateChart every 5 seconds
         setInterval(updateChart, 1000);
