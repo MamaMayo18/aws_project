@@ -51,14 +51,17 @@
                 });
                 const result = await response.json();
                 if (response.ok) {
-                    document.getElementById('result').innerText = result.body;
+                    if (result.body !== undefined) {
+                        document.getElementById('result').innerText = result.body;
+                    } else {
+                        document.getElementById('result').innerText = 'Vote recorded successfully!';
+                    }
                 } else {
                     document.getElementById('result').innerText = result.body; // Display the error message
                 }
             } catch (error) {
                 document.getElementById('result').innerText = 'An error occurred while submitting your vote.';
-            }
-        });
+            });
 
         const ctx = document.getElementById('votesChart').getContext('2d');
         const votesChart = new Chart(ctx, {
